@@ -5,7 +5,6 @@ import { ContractDocument } from '@/types';
 import { maskPII } from '@/lib/redaction';
 import {
   FileText,
-  Shield,
   Eye,
   Lock,
   Calendar,
@@ -13,46 +12,43 @@ import {
   Upload,
   Search,
   Download,
-  Check,
+  FileCheck,
+  Tag,
 } from 'lucide-react';
 
 interface ContractViewerProps {
   contract: ContractDocument;
-  contracts: ContractDocument[];
-  onSelectContract: (contract: ContractDocument) => void;
   onUploadContract: (newDoc: ContractDocument) => void;
   showRedacted: boolean;
   onToggleRedacted: (show: boolean) => void;
+  activeTab: 'text' | 'redlines' | 'redacted';
+  onTabChange: (tab: 'text' | 'redlines' | 'redacted') => void;
 }
 
 export const ContractViewer: React.FC<ContractViewerProps> = ({
   contract,
-  contracts,
-  onSelectContract,
   onUploadContract,
   showRedacted,
   onToggleRedacted,
+  activeTab,
+  onTabChange,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Export contract as markdown / txt
   const handleExportContract = () => {
     const textToExport = showRedacted ? contract.redaction.redactedText : contract.rawText;
     const blob = new Blob([textToExport], { type: 'text/markdown;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${contract.title.toLowerCase().replace(/\s+/g, '-')}-${
-      showRedacted ? 'redacted' : 'original'
-    }.md`;
+    a.download = `${contract.title.toLowerCase().replace(/\s+/g, '-')}.md`;
     document.body.appendChild(a);
     a.click();
     a.remove();
   };
 
-  // Handle client-side file drop (PDF / TXT / MD)
   const handleFileDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
@@ -78,7 +74,7 @@ export const ContractViewer: React.FC<ContractViewerProps> = ({
         id: `uploaded-${Date.now()}`,
         title,
         type: 'Custom',
-        counterparty: 'Imported Counterparty',
+        counterparty: 'Imported Entity',
         effectiveDate: new Date().toLocaleDateString('en-US', {
           month: 'short',
           day: 'numeric',
@@ -88,13 +84,13 @@ export const ContractViewer: React.FC<ContractViewerProps> = ({
         clauses: [
           {
             id: `c-upload-1`,
-            title: 'Imported Agreement Structure',
-            sectionNumber: 'Document Scope',
+            title: 'Uploaded Agreement Analysis',
+            sectionNumber: 'Section 1',
             originalText: content.slice(0, 200) + '...',
-            summary: 'File parsed 100% in-browser memory. Zero external server uploads.',
+            summary: 'File parsed locally in client browser memory with zero network egress.',
             riskLevel: 'medium',
-            riskReason: 'Processed locally via client sandbox.',
-            suggestedRedline: 'Standard mutual liability covenants recommended.',
+            riskReason: 'Processed entirely on-device.',
+            suggestedRedline: 'Standard enterprise mutual terms recommended.',
           },
         ],
         redaction,
@@ -114,127 +110,128 @@ export const ContractViewer: React.FC<ContractViewerProps> = ({
       }}
       onDragLeave={() => setIsDragging(false)}
       onDrop={handleFileDrop}
-      className={`rounded-xl border bg-slate-900/90 overflow-hidden shadow-2xl flex flex-col h-full transition-all ${
-        isDragging ? 'border-emerald-500 ring-2 ring-emerald-500/20' : 'border-slate-800'
+      className={`rounded-xl border bg-zinc-900/80 shadow-sm flex flex-col h-full transition-all ${
+        isDragging ? 'border-zinc-500 ring-2 ring-zinc-500/20' : 'border-zinc-800'
       }`}
     >
-      {/* Top Bar / Contract Selector & Controls */}
-      <div className="p-4 border-b border-slate-800 bg-slate-950/70 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <FileText className="w-5 h-5 text-blue-400 shrink-0" />
-          <select
-            value={contract.id}
-            onChange={(e) => {
-              const selected = contracts.find((c) => c.id === e.target.value);
-              if (selected) onSelectContract(selected);
-            }}
-            className="bg-slate-900 border border-slate-700 text-white text-xs font-semibold rounded-lg px-3 py-1.5 focus:ring-1 focus:ring-blue-500 cursor-pointer"
-          >
-            {contracts.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.title} ({c.type})
-              </option>
-            ))}
-          </select>
-
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".txt,.md,.json,.pdf"
-            onChange={handleFileInputChange}
-            className="hidden"
-          />
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            title="Drop or upload any agreement locally"
-            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs flex items-center gap-1 transition-colors"
-          >
-            <Upload className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Drop File</span>
-          </button>
+      {/* Top Document Header Bar */}
+      <div className="px-5 py-3.5 border-b border-zinc-800/80 flex flex-wrap items-center justify-between gap-3">
+        {/* Document Title & Meta */}
+        <div>
+          <div className="flex items-center gap-2">
+            <h1 className="font-semibold text-zinc-100 text-sm">{contract.title}</h1>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700/60">
+              {contract.type}
+            </span>
+          </div>
+          <div className="flex items-center gap-3 text-xs text-zinc-500 mt-1">
+            <span className="flex items-center gap-1">
+              <Building className="w-3 h-3 text-zinc-500" />
+              {contract.counterparty}
+            </span>
+            <span>•</span>
+            <span className="flex items-center gap-1">
+              <Calendar className="w-3 h-3 text-zinc-500" />
+              Effective: {contract.effectiveDate}
+            </span>
+          </div>
         </div>
 
-        {/* View Mode Toggle (Raw vs Redacted) & Export */}
+        {/* View Tabs (Text vs Redacted) & Actions */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-lg border border-slate-800 text-xs">
+          {/* Segmented Control */}
+          <div className="flex items-center bg-zinc-950 p-1 rounded-lg border border-zinc-800 text-xs">
             <button
               onClick={() => onToggleRedacted(false)}
-              className={`px-3 py-1 rounded-md font-medium transition-colors flex items-center gap-1.5 ${
-                !showRedacted ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
+              className={`px-3 py-1 rounded-md font-medium transition-colors ${
+                !showRedacted ? 'bg-zinc-800 text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
-              <Eye className="w-3.5 h-3.5" />
-              <span>Raw Text</span>
+              Original Text
             </button>
             <button
               onClick={() => onToggleRedacted(true)}
               className={`px-3 py-1 rounded-md font-medium transition-colors flex items-center gap-1.5 ${
                 showRedacted
-                  ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/40 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-zinc-800 text-emerald-400 shadow-sm'
+                  : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
-              <Lock className="w-3.5 h-3.5 text-emerald-400" />
-              <span>PII Masked</span>
-              <span className="text-[10px] bg-emerald-500/20 px-1.5 py-0.2 rounded-full font-bold">
+              <Lock className="w-3 h-3 text-emerald-400" />
+              <span>Masked View</span>
+              <span className="text-[10px] font-mono bg-zinc-900 px-1.5 py-0.2 rounded text-zinc-400">
                 {contract.redaction.maskedCount}
               </span>
             </button>
           </div>
 
+          {/* Upload & Export */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".txt,.md,.pdf"
+            onChange={handleFileInputChange}
+            className="hidden"
+          />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            title="Import custom document"
+            className="px-2.5 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-zinc-300 border border-zinc-700/80 text-xs flex items-center gap-1.5 transition-colors"
+          >
+            <Upload className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Import</span>
+          </button>
           <button
             onClick={handleExportContract}
-            title="Download contract"
-            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
+            title="Export markdown"
+            className="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-zinc-300 border border-zinc-700/80 text-xs transition-colors"
           >
             <Download className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
 
-      {/* Search & Metadata Bar */}
-      <div className="px-4 py-2.5 bg-slate-900/50 border-b border-slate-850 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-400">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5">
-            <Building className="w-3.5 h-3.5 text-slate-500" />
-            <span>Counterparty:</span>
-            <strong className="text-slate-200">{contract.counterparty}</strong>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <Calendar className="w-3.5 h-3.5 text-slate-500" />
-            <span>Effective:</span>
-            <strong className="text-slate-200">{contract.effectiveDate}</strong>
-          </div>
+      {/* Subheader: Filter & Search Bar */}
+      <div className="px-5 py-2 bg-zinc-950/40 border-b border-zinc-800/60 flex items-center justify-between text-xs text-zinc-500">
+        <div className="flex items-center gap-2">
+          <Tag className="w-3.5 h-3.5 text-zinc-500" />
+          <span>{contract.clauses.length} Flagged Covenants</span>
+          <span>•</span>
+          <span className="text-zinc-400">{contract.redaction.tokens.length} PII Tokens Indexed</span>
         </div>
 
-        {/* In-Document Search */}
         <div className="relative">
-          <Search className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2" />
+          <Search className="w-3 h-3 text-zinc-500 absolute left-2.5 top-2" />
           <input
             type="text"
-            placeholder="Search clauses or terms..."
+            placeholder="Filter document..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-slate-950 border border-slate-800 rounded-md pl-8 pr-3 py-1 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 w-44"
+            className="bg-zinc-900 border border-zinc-800 rounded-md pl-7 pr-2.5 py-1 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-700 w-36"
           />
         </div>
       </div>
 
-      {/* Contract Text Body */}
-      <div className="p-4 flex-1 overflow-y-auto max-h-[440px] bg-slate-950/80 font-mono text-xs leading-relaxed text-slate-300 whitespace-pre-wrap select-text">
+      {/* Main Document Reading Canvas */}
+      <div className="p-6 flex-1 overflow-y-auto max-h-[460px] bg-zinc-950/70 font-mono text-xs leading-relaxed text-zinc-300 whitespace-pre-wrap select-text">
         {showRedacted ? (
-          <div className="text-emerald-300/90 leading-relaxed">
+          <div className="text-zinc-300 leading-relaxed font-mono">
             {contract.redaction.redactedText}
           </div>
         ) : (
-          <div className="leading-relaxed">{contract.rawText}</div>
+          <div className="text-zinc-300 leading-relaxed font-mono">
+            {contract.rawText}
+          </div>
         )}
       </div>
 
-      {/* Bottom Drop Zone Hint */}
-      <div className="p-2 border-t border-slate-800 bg-slate-950/60 text-center text-[11px] text-slate-500 flex items-center justify-center gap-1.5">
-        <Shield className="w-3 h-3 text-emerald-400" />
-        <span>Drop any contract, PDF, or NDA directly onto this panel for private in-browser analysis</span>
+      {/* Subtle Bottom Status Note */}
+      <div className="px-5 py-2 border-t border-zinc-800/80 bg-zinc-950/60 flex items-center justify-between text-[11px] text-zinc-500">
+        <span className="flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+          Local Document Sandbox • Memory-Only Storage
+        </span>
+        <span className="text-zinc-600 font-mono">UTF-8 • {contract.rawText.length} chars</span>
       </div>
     </div>
   );

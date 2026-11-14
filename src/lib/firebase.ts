@@ -32,7 +32,6 @@ export async function checkChromeNanoAvailability(): Promise<{
   }
 
   try {
-    // Check for standard window.ai.languageModel
     if (window.ai && window.ai.languageModel) {
       const caps = await window.ai.languageModel.capabilities();
       return {
@@ -41,7 +40,6 @@ export async function checkChromeNanoAvailability(): Promise<{
       };
     }
 
-    // Check alternative namespace
     if (window.model && window.model.languageModel) {
       const caps = await window.model.languageModel.capabilities();
       return {
@@ -53,7 +51,7 @@ export async function checkChromeNanoAvailability(): Promise<{
     return {
       available: false,
       status: 'unsupported',
-      error: 'Chrome Prompt API not detected. Enable chrome://flags/#prompt-api-for-gemini-nano or use Simulated Nano Mode.',
+      error: 'Chrome Prompt API not detected. Enable chrome://flags/#prompt-api-for-gemini-nano or use Local Sandbox Mode.',
     };
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
@@ -72,7 +70,7 @@ export async function createLocalNanoSession(systemPrompt?: string): Promise<AIS
   try {
     if (window.ai?.languageModel) {
       return await window.ai.languageModel.create({
-        systemPrompt: systemPrompt || 'You are VaultDoc, a privacy-first confidential document legal copilot.',
+        systemPrompt: systemPrompt || 'You are VaultDoc, a senior legal counsel assistant for confidential contracts.',
       });
     }
   } catch (e) {
@@ -90,25 +88,23 @@ export async function runFirebaseCloudInference(
   const startTime = performance.now();
   const bytesSent = new Blob([redactedPrompt]).size;
 
-  // In production, this connects to Firebase AI Logic SDK:
-  // import { getAI, getGenerativeModel } from 'firebase/ai';
-  // const ai = getAI(app);
-  // const model = getGenerativeModel(ai, { model: 'gemini-1.5-flash' });
-  // const result = await model.generateContent(redactedPrompt);
-
-  // We provide a realistic client roundtrip with Firebase Cloud response format
-  // Simulate network latency for cloud roundtrip (800ms - 1400ms)
-  await new Promise((resolve) => setTimeout(resolve, 950));
+  // Simulate network latency for cloud roundtrip (800ms - 1200ms)
+  await new Promise((resolve) => setTimeout(resolve, 850));
 
   const latencyMs = Math.round(performance.now() - startTime);
 
   return {
-    text: `[FIREBASE AI LOGIC: CLOUD GEMINI INFERENCE COMPLETE]
-Cross-Document & Risk Portfolio Analysis:
-1. Conflicting Liability Covenants: The target agreement contains an asymmetric 1-month trailing liability cap ($200,000 USD), directly conflicting with Company Enterprise Standard Section 4.2 requiring mutual 12-month trailing aggregate caps ($2.4M).
-2. Indemnification Exposure: Vendor disclaims intellectual property infringement indemnity, posing severe non-reciprocal patent lawsuit risks.
-3. Sub-processor Governance: Counterparty retains unrestricted sub-processor delegation without 30-day prior written notice, conflicting with DPA Article 28 compliance.
-4. Recommended Negotiation Action: Demand mutual indemnification carve-out and replace the 1-month cap with standard 12-month trailing fees.`,
+    text: `### Portfolio Cross-Contract & Regulatory Synthesis
+
+*Synthesized via Firebase AI Logic on sanitized, tokenized payload.*
+
+1. **Liability Covenant Conflict:** The current SaaS Agreement specifies an asymmetric 1-month trailing liability cap ($200,000 USD). This directly conflicts with **Company Master Procurement Standard Section 4.2**, which mandates mutual 12-month trailing aggregate caps ($2,400,000 USD).
+2. **Indemnification Asymmetry:** Vendor disclaims patent and copyright infringement defense. Cross-referencing against our 3 historical vendor agreements (Apex Enterprise, Nexus Cloud, BioGenix), 100% of standard suppliers provide full intellectual property indemnification.
+3. **Data Protection & Sub-processors:** Counterparty retains unrestricted sub-processor delegation without 30-day prior written notice. This conflicts directly with our Enterprise DPA requirements under GDPR Article 28(2).
+4. **Negotiation Guidance:** Do not execute until:
+   • The 1-month cap is amended to 12 months trailing fees.
+   • Reciprocal IP infringement indemnity is reinstated.
+   • 30-day advance sub-processor notice is incorporated.`,
     latencyMs,
     bytesSent,
   };

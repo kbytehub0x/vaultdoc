@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { InferenceMode } from '@/types';
-import { Send, Sparkles, Shield, Cloud, Terminal, Cpu, ArrowUpRight } from 'lucide-react';
+import { Send, Sparkles, MessageSquare, ArrowUpRight, ShieldCheck, Cloud } from 'lucide-react';
 
 export interface ChatMessage {
   id: string;
@@ -32,22 +32,22 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
 
   const quickPrompts = [
     {
-      label: 'Summarize Liability Cap',
+      label: 'Analyze liability cap',
       prompt: 'What is our liability cap and risk exposure in this agreement?',
       type: 'local',
     },
     {
-      label: 'Check Termination Rights',
+      label: 'Termination terms',
       prompt: 'Can we terminate for convenience, and what are the notice terms?',
       type: 'local',
     },
     {
-      label: '⚡ Cross-Contract Portfolio Conflict',
+      label: 'Compare with standard MSA',
       prompt: 'Compare this agreement against all vendor contracts and identify conflicting indemnity and liability terms.',
       type: 'cloud',
     },
     {
-      label: 'Draft Safe Mutual Indemnity',
+      label: 'Draft mutual indemnity',
       prompt: 'Draft a balanced mutual indemnification redline with IP infringement protection.',
       type: 'local',
     },
@@ -61,38 +61,33 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
   };
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/90 overflow-hidden shadow-xl flex flex-col h-full min-h-[520px]">
-      {/* Header */}
-      <div className="p-4 border-b border-slate-800 bg-slate-950/60 flex items-center justify-between">
+    <div className="rounded-xl border border-zinc-800 bg-zinc-900/80 shadow-sm flex flex-col h-full min-h-[580px]">
+      {/* Panel Header */}
+      <div className="px-5 py-3.5 border-b border-zinc-800/80 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20">
-            <Terminal className="w-4 h-4" />
-          </div>
-          <div>
-            <h2 className="text-sm font-semibold text-white">Hybrid Copilot Q&A</h2>
-            <p className="text-xs text-slate-400">Local Zero-Egress Reasoning + On-Demand Cloud Escalation</p>
-          </div>
+          <MessageSquare className="w-4 h-4 text-zinc-400" />
+          <h3 className="font-semibold text-zinc-100 text-sm">Contract Counsel Assistant</h3>
         </div>
-        <div className="flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded bg-slate-900 border border-slate-800">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-slate-300">Hybrid Router Ready</span>
+        <div className="flex items-center gap-1.5 text-[11px] text-zinc-400 font-mono">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          <span>Local Router</span>
         </div>
       </div>
 
-      {/* Suggested Quick Prompt Pills */}
-      <div className="px-4 py-2.5 bg-slate-950/40 border-b border-slate-850 flex items-center gap-2 overflow-x-auto text-xs no-scrollbar">
-        <span className="text-slate-500 font-semibold uppercase tracking-wider text-[10px] shrink-0">
-          Quick Audit:
+      {/* Suggested Inquiries (Natural Human Legal Prompts) */}
+      <div className="px-4 py-2.5 bg-zinc-950/40 border-b border-zinc-850 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+        <span className="text-[10px] uppercase font-semibold text-zinc-500 shrink-0 mr-1">
+          Inquiries:
         </span>
         {quickPrompts.map((qp, i) => (
           <button
             key={i}
             onClick={() => onSendMessage(qp.prompt)}
             disabled={isProcessing}
-            className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-medium border transition-all ${
+            className={`shrink-0 px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors border ${
               qp.type === 'cloud'
-                ? 'bg-amber-950/30 border-amber-500/30 text-amber-300 hover:bg-amber-900/40'
-                : 'bg-slate-800/80 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white'
+                ? 'bg-zinc-900 border-zinc-700/80 text-zinc-300 hover:border-zinc-500'
+                : 'bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850'
             }`}
           >
             {qp.label}
@@ -100,8 +95,8 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
         ))}
       </div>
 
-      {/* Chat Messages Log */}
-      <div className="flex-1 p-4 overflow-y-auto space-y-4 max-h-[420px] bg-slate-950/60 text-xs">
+      {/* Messages Feed */}
+      <div className="flex-1 p-4 overflow-y-auto space-y-4 max-h-[460px] bg-zinc-950/40 text-xs">
         {messages.map((m) => {
           const isUser = m.sender === 'user';
           return (
@@ -109,65 +104,69 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
               key={m.id}
               className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} space-y-1.5`}
             >
-              {/* Message Header Badge */}
-              <div className="flex items-center gap-1.5 text-[10px] font-mono text-slate-400 px-1">
-                {isUser ? (
-                  <span>You ({m.timestamp})</span>
-                ) : (
-                  <div className="flex items-center gap-1.5">
-                    {m.isEscalated ? (
-                      <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-950/80 border border-amber-500/30 text-amber-300 font-semibold">
-                        <Cloud className="w-3 h-3 text-amber-400" />
-                        Firebase AI Logic (Cloud Gemini) | {m.bytesEgress}B Egress | {m.latencyMs}ms
-                      </span>
-                    ) : (
-                      <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-950/80 border border-emerald-500/30 text-emerald-300 font-semibold">
-                        <Shield className="w-3 h-3 text-emerald-400" />
-                        On-Device Gemini Nano | 0 Bytes Egress | {m.latencyMs}ms
-                      </span>
-                    )}
-                  </div>
-                )}
+              {/* Message Meta Info */}
+              <div className="flex items-center gap-2 text-[10px] text-zinc-500 font-mono px-1">
+                <span>{isUser ? 'You' : 'VaultDoc Counsel'}</span>
+                <span>•</span>
+                <span>{m.timestamp}</span>
               </div>
 
               {/* Message Bubble */}
               <div
-                className={`p-3.5 rounded-xl max-w-[90%] sm:max-w-[80%] whitespace-pre-wrap leading-relaxed shadow-md ${
+                className={`p-3.5 rounded-xl max-w-[92%] sm:max-w-[85%] leading-relaxed shadow-sm ${
                   isUser
-                    ? 'bg-blue-600 text-white rounded-br-none'
-                    : m.isEscalated
-                    ? 'bg-slate-900 border border-amber-500/20 text-slate-200 rounded-bl-none font-sans'
-                    : 'bg-slate-900 border border-slate-800 text-slate-200 rounded-bl-none font-sans'
+                    ? 'bg-zinc-800 text-zinc-100 rounded-br-none border border-zinc-700/50'
+                    : 'bg-zinc-900/90 text-zinc-200 rounded-bl-none border border-zinc-800'
                 }`}
               >
-                {m.text}
+                <div className="whitespace-pre-wrap leading-relaxed">{m.text}</div>
+
+                {/* Subtle, non-intrusive execution provenance tag */}
+                {!isUser && m.latencyMs !== undefined && (
+                  <div className="mt-2.5 pt-2 border-t border-zinc-800/80 flex items-center justify-between text-[10px] text-zinc-500 font-mono">
+                    <span className="flex items-center gap-1">
+                      {m.isEscalated ? (
+                        <>
+                          <Cloud className="w-3 h-3 text-zinc-400" />
+                          <span>Firebase AI Cloud • Redacted context</span>
+                        </>
+                      ) : (
+                        <>
+                          <ShieldCheck className="w-3 h-3 text-emerald-400" />
+                          <span>Gemini Nano • 0 B egress</span>
+                        </>
+                      )}
+                    </span>
+                    <span>{m.latencyMs}ms</span>
+                  </div>
+                )}
               </div>
             </div>
           );
         })}
 
         {isProcessing && (
-          <div className="flex items-center gap-2 text-xs text-slate-400 p-2">
-            <Sparkles className="w-4 h-4 text-emerald-400 animate-spin" />
-            <span>Processing via hybrid inference routing...</span>
+          <div className="flex items-center gap-2 text-xs text-zinc-500 p-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-ping" />
+            <span>Analyzing contract structure...</span>
           </div>
         )}
       </div>
 
-      {/* Input Bar */}
-      <form onSubmit={handleSubmit} className="p-3 border-t border-slate-800 bg-slate-950 flex items-center gap-2">
+      {/* Input Form */}
+      <form onSubmit={handleSubmit} className="p-3 border-t border-zinc-800 bg-zinc-950 flex items-center gap-2">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask anything about obligations, caps, or ask for cross-contract audit..."
+          placeholder="Ask a question or request a clause redline..."
           disabled={isProcessing}
-          className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 disabled:opacity-50"
+          className="flex-1 bg-zinc-900 border border-zinc-850 rounded-lg px-3.5 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-700 disabled:opacity-50"
         />
         <button
           type="submit"
           disabled={!input.trim() || isProcessing}
-          className="px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-lg shadow-emerald-500/10 transition-colors disabled:opacity-50 cursor-pointer"
+          className="px-3 py-2 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-semibold flex items-center gap-1 shadow-sm transition-colors disabled:opacity-40 cursor-pointer"
         >
           <span>Send</span>
           <Send className="w-3.5 h-3.5" />

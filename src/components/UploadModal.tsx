@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { ContractDocument } from '@/types';
 import { maskPII } from '@/lib/redaction';
-import { Upload, X, FileText, Check } from 'lucide-react';
+import { Upload, X, Check } from 'lucide-react';
 
 interface UploadModalProps {
   isOpen: boolean;
@@ -39,13 +39,13 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
       clauses: [
         {
           id: `c-custom-1`,
-          title: 'Custom Analyzed Clause',
+          title: 'Imported Agreement Structure',
           sectionNumber: 'Section 1',
           originalText: text.slice(0, 180) + '...',
-          summary: 'Locally ingested contract document processed inside browser memory.',
+          summary: 'Agreement ingested locally in browser sandbox memory with zero external requests.',
           riskLevel: 'medium',
-          riskReason: 'Evaluated locally on-device. Zero confidential data was transmitted to external servers.',
-          suggestedRedline: 'Mutual liability covenants and standard termination terms recommended.',
+          riskReason: 'Processed entirely on-device.',
+          suggestedRedline: 'Standard enterprise mutual terms recommended.',
         },
       ],
       redaction,
@@ -57,90 +57,92 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onAdd
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-      <div className="relative w-full max-w-xl rounded-xl border border-slate-800 bg-slate-900 shadow-2xl overflow-hidden text-slate-200">
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
-          <div className="flex items-center gap-2">
-            <Upload className="w-5 h-5 text-emerald-400" />
-            <h3 className="text-sm font-semibold text-white">Ingest Custom Contract (100% In-Browser)</h3>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
+      <div className="relative w-full max-w-xl rounded-xl border border-zinc-700 bg-zinc-900 shadow-2xl overflow-hidden text-zinc-200">
+        <div className="px-6 py-4 border-b border-zinc-800 flex items-center justify-between bg-zinc-950">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-md bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-300">
+              <Upload className="w-3.5 h-3.5" />
+            </div>
+            <h3 className="text-sm font-semibold text-zinc-100">Import Agreement</h3>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs">
           <div>
-            <label className="block text-slate-400 mb-1 font-medium">Contract Title</label>
+            <label className="block text-zinc-400 mb-1 font-medium">Contract Title</label>
             <input
               type="text"
               required
-              placeholder="e.g. Mutual Non-Disclosure Agreement"
+              placeholder="e.g. Master Services Agreement"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-100 focus:outline-none focus:border-zinc-700"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-slate-400 mb-1 font-medium">Counterparty</label>
+              <label className="block text-zinc-400 mb-1 font-medium">Counterparty</label>
               <input
                 type="text"
-                placeholder="e.g. Acme Corp / Vendor LLC"
+                placeholder="e.g. Global Tech LLC"
                 value={counterparty}
                 onChange={(e) => setCounterparty(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-100 focus:outline-none focus:border-zinc-700"
               />
             </div>
             <div>
-              <label className="block text-slate-400 mb-1 font-medium">Contract Type</label>
+              <label className="block text-zinc-400 mb-1 font-medium">Agreement Type</label>
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value as ContractDocument['type'])}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer"
+                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-100 focus:outline-none focus:border-zinc-700 cursor-pointer"
               >
                 <option value="Custom">Custom Agreement</option>
                 <option value="SaaS MSA">SaaS MSA</option>
-                <option value="DPA">Data Processing Addendum</option>
-                <option value="Consulting / IP">Consulting / IP</option>
+                <option value="DPA">Data Processing Addendum (DPA)</option>
+                <option value="Consulting / IP">Consulting & IP</option>
               </select>
             </div>
           </div>
 
           <div>
-            <label className="block text-slate-400 mb-1 font-medium">Contract Text or Clauses</label>
+            <label className="block text-zinc-400 mb-1 font-medium">Contract Text</label>
             <textarea
               required
               rows={6}
-              placeholder="Paste contract language, confidentiality terms, or clauses here..."
+              placeholder="Paste contract terms or clause text..."
               value={text}
               onChange={(e) => setText(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-white font-mono leading-relaxed focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-3 text-zinc-200 font-mono leading-relaxed focus:outline-none focus:border-zinc-700"
             />
           </div>
 
-          <div className="p-3 rounded-lg bg-emerald-950/30 border border-emerald-500/20 text-emerald-300 text-[11px] leading-relaxed">
-            🛡️ <strong>Zero-Egress Ingestion:</strong> Text is tokenized and parsed entirely within browser memory. No data is transmitted to external servers during ingestion.
+          <div className="p-3 rounded-lg bg-zinc-950 border border-zinc-850 text-zinc-400 text-[11px] leading-relaxed">
+            Content is parsed and tokenized in browser memory. No external API transmission occurs during ingestion.
           </div>
 
-          <div className="pt-2 flex items-center justify-end gap-2">
+          <div className="pt-2 flex items-center justify-end gap-2.5">
             <button
               type="button"
               onClick={onClose}
-              className="px-3.5 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              className="px-3.5 py-1.5 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold flex items-center gap-1.5 shadow-lg shadow-emerald-500/10 transition-colors"
+              className="px-4 py-1.5 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 font-semibold flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer"
             >
-              <Check className="w-4 h-4" />
-              <span>Ingest Locally</span>
+              <Check className="w-3.5 h-3.5" />
+              <span>Import Agreement</span>
             </button>
           </div>
         </form>
