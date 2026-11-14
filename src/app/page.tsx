@@ -34,6 +34,7 @@ import {
   Sparkles,
   ChevronRight,
   ExternalLink,
+  Plane,
 } from 'lucide-react';
 
 export default function Home() {
@@ -43,6 +44,7 @@ export default function Home() {
   const [showRedacted, setShowRedacted] = useState<boolean>(false);
   const [mode, setMode] = useState<InferenceMode>('simulated_nano');
   const [hardwareNanoDetected, setHardwareNanoDetected] = useState<boolean>(false);
+  const [isAirplaneMode, setIsAirplaneMode] = useState<boolean>(false);
 
   // Modals & Drawers
   const [isAuditDrawerOpen, setIsAuditDrawerOpen] = useState(false);
@@ -155,6 +157,23 @@ All single-document analysis, clause extraction, and PII masking run 100% locall
 
     // If query requires cross-document reasoning or portfolio audit -> Trigger Escalation Gate!
     if (routing.target === 'REQUIRES_CLOUD_ESCALATION') {
+      if (isAirplaneMode) {
+        // Demonstrate offline protection
+        const offlineBlockedMsg: ChatMessage = {
+          id: `msg-${Date.now() + 1}`,
+          sender: 'assistant',
+          text: `[OFFLINE / AIRPLANE MODE ACTIVE]
+This query requires cross-document portfolio reasoning which normally escalates to Firebase AI Logic in Google Cloud. Because Offline Mode is active, cloud network egress is strictly blocked. Disable Offline Mode to preview the sanitized payload and escalate.`,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          mode: 'simulated_nano',
+          bytesEgress: 0,
+          latencyMs: 15,
+        };
+        setMessages((prev) => [...prev, offlineBlockedMsg]);
+        setIsProcessing(false);
+        return;
+      }
+
       const sanitized = maskPII(
         `Portfolio Context Query: "${query}". Subject Document: ${activeContract.title}. Clauses: ${activeContract.clauses
           .map((c) => c.title)
@@ -257,6 +276,34 @@ All single-document analysis, clause extraction, and PII masking run 100% locall
     }
   };
 
+  // Apply redline to active document
+  const handleAcceptRedline = (clauseId: string, redlinedText: string) => {
+    setActiveContract((prev) => {
+      const updatedClauses = prev.clauses.map((c) => {
+        if (c.id === clauseId) {
+          return {
+            ...c,
+            originalText: redlinedText,
+            riskLevel: 'low' as const,
+            riskReason: 'Resolved: Amended on-device to mutual enterprise standard.',
+          };
+        }
+        return c;
+      });
+
+      return {
+        ...prev,
+        clauses: updatedClauses,
+      };
+    });
+
+    confetti({
+      particleCount: 65,
+      spread: 70,
+      origin: { y: 0.6 },
+    });
+  };
+
   // Draft redline on-device
   const handleDraftRedline = async (clause: ContractClause) => {
     setIsGeneratingRedline(true);
@@ -265,7 +312,6 @@ All single-document analysis, clause extraction, and PII masking run 100% locall
       await new Promise((res) => setTimeout(res, 350));
       const latencyMs = Math.round(performance.now() - startTime);
 
-      // Trigger celebration confetti for successful on-device redline
       confetti({
         particleCount: 45,
         spread: 60,
@@ -296,13 +342,15 @@ All single-document analysis, clause extraction, and PII masking run 100% locall
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
-      {/* Real-Time Telemetry HUD */}
+      {/* Real-Time Telemetry HUD with Airplane Mode Switch */}
       <TelemetryHUD
         mode={mode}
         onModeChange={setMode}
         telemetry={telemetry}
         hardwareNanoDetected={hardwareNanoDetected}
         totalPIIProtected={activeContract.redaction.maskedCount}
+        isAirplaneMode={isAirplaneMode}
+        onToggleAirplaneMode={setIsAirplaneMode}
       />
 
       {/* Main App Container */}
@@ -314,19 +362,24 @@ All single-document analysis, clause extraction, and PII masking run 100% locall
             <span className="text-xs font-bold text-white px-2.5 py-1 rounded bg-slate-800 border border-slate-700">
               {activeContract.title}
             </span>
+            {isAirplaneMode && (
+              <span className="flex items-center gap-1 text-[11px] font-mono px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-500/30">
+                <Plane className="w-3 h-3 text-amber-400" /> Offline Protected
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsUploadModalOpen(true)}
-              className="px-3 py-1.5 rounded-lg bg-emerald-600/90 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-sm"
+              className="px-3 py-1.5 rounded-lg bg-emerald-600/90 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer"
             >
               <FilePlus className="w-3.5 h-3.5" />
               <span>Ingest New Contract</span>
             </button>
             <button
               onClick={() => setIsAuditDrawerOpen(true)}
-              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium flex items-center gap-1.5 border border-slate-700 transition-colors"
+              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium flex items-center gap-1.5 border border-slate-700 transition-colors cursor-pointer"
             >
               <History className="w-3.5 h-3.5 text-purple-400" />
               <span>Audit Trail ({auditLogs.length})</span>
@@ -342,6 +395,10 @@ All single-document analysis, clause extraction, and PII masking run 100% locall
               contract={activeContract}
               contracts={contracts}
               onSelectContract={setActiveContract}
+              onUploadContract={(newDoc) => {
+                setContracts((prev) => [newDoc, ...prev]);
+                setActiveContract(newDoc);
+              }}
               showRedacted={showRedacted}
               onToggleRedacted={setShowRedacted}
             />
@@ -349,6 +406,7 @@ All single-document analysis, clause extraction, and PII masking run 100% locall
             <ClauseRiskMatrix
               clauses={activeContract.clauses}
               onDraftRedline={handleDraftRedline}
+              onAcceptRedline={handleAcceptRedline}
               isGeneratingRedline={isGeneratingRedline}
             />
           </div>
