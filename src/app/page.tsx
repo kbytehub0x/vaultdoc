@@ -17,6 +17,7 @@ import { ChatPanel, ChatMessage } from '@/components/ChatPanel';
 import { RedactionGateModal } from '@/components/RedactionGateModal';
 import { AuditLogDrawer } from '@/components/AuditLogDrawer';
 import { UploadModal } from '@/components/UploadModal';
+import { ExecutiveMemoModal } from '@/components/ExecutiveMemoModal';
 import {
   checkChromeNanoAvailability,
   runFirebaseCloudInference,
@@ -40,6 +41,7 @@ export default function Home() {
   // Modals & Drawers
   const [isAuditDrawerOpen, setIsAuditDrawerOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isMemoModalOpen, setIsMemoModalOpen] = useState(false);
   const [isEscalationModalOpen, setIsEscalationModalOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isGeneratingRedline, setIsGeneratingRedline] = useState(false);
@@ -78,7 +80,7 @@ export default function Home() {
     },
   ]);
 
-  // Messages Feed (Natural Legal Counsel Language)
+  // Messages Feed
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: 'msg-welcome',
@@ -144,7 +146,6 @@ I have completed a preliminary review of the covenants on-device. All text extra
 
     const routing = evaluateQueryRouting(query);
 
-    // If query requires cross-document reasoning or portfolio audit -> Trigger Escalation Gate!
     if (routing.target === 'REQUIRES_CLOUD_ESCALATION') {
       if (isAirplaneMode) {
         const offlineBlockedMsg: ChatMessage = {
@@ -180,7 +181,6 @@ Cross-contract portfolio analysis requires external cloud synthesis via Firebase
       return;
     }
 
-    // Local On-Device Execution
     try {
       const localResult = await executeLocalNanoInference(
         `Contract: ${activeContract.title}\nQuestion: ${query}`,
@@ -322,7 +322,7 @@ Cross-contract portfolio analysis requires external cloud synthesis via Firebase
 
   return (
     <div className="flex h-screen bg-zinc-950 text-zinc-100 font-sans overflow-hidden">
-      {/* Human Enterprise Sidebar */}
+      {/* Sidebar */}
       <Sidebar
         contracts={contracts}
         activeContractId={activeContract.id}
@@ -337,7 +337,7 @@ Cross-contract portfolio analysis requires external cloud synthesis via Firebase
         totalPIIProtected={activeContract.redaction.maskedCount}
       />
 
-      {/* Main Workspace Stage */}
+      {/* Main Workspace */}
       <main className="flex-1 flex overflow-hidden">
         {/* Center: Document & Risk Assessment Stage */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
@@ -351,6 +351,7 @@ Cross-contract portfolio analysis requires external cloud synthesis via Firebase
             onToggleRedacted={setShowRedacted}
             activeTab={activeTab}
             onTabChange={setActiveTab}
+            onOpenMemo={() => setIsMemoModalOpen(true)}
           />
 
           <ClauseRiskMatrix
@@ -390,6 +391,12 @@ Cross-contract portfolio analysis requires external cloud synthesis via Firebase
         isOpen={isAuditDrawerOpen}
         onClose={() => setIsAuditDrawerOpen(false)}
         logs={auditLogs}
+      />
+
+      <ExecutiveMemoModal
+        isOpen={isMemoModalOpen}
+        onClose={() => setIsMemoModalOpen(false)}
+        contract={activeContract}
       />
 
       <UploadModal

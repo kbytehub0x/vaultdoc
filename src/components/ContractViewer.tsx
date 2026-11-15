@@ -12,8 +12,8 @@ import {
   Upload,
   Search,
   Download,
-  FileCheck,
   Tag,
+  FileCheck2,
 } from 'lucide-react';
 
 interface ContractViewerProps {
@@ -23,6 +23,7 @@ interface ContractViewerProps {
   onToggleRedacted: (show: boolean) => void;
   activeTab: 'text' | 'redlines' | 'redacted';
   onTabChange: (tab: 'text' | 'redlines' | 'redacted') => void;
+  onOpenMemo: () => void;
 }
 
 export const ContractViewer: React.FC<ContractViewerProps> = ({
@@ -32,6 +33,7 @@ export const ContractViewer: React.FC<ContractViewerProps> = ({
   onToggleRedacted,
   activeTab,
   onTabChange,
+  onOpenMemo,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isDragging, setIsDragging] = useState(false);
@@ -143,7 +145,7 @@ export const ContractViewer: React.FC<ContractViewerProps> = ({
           <div className="flex items-center bg-zinc-950 p-1 rounded-lg border border-zinc-800 text-xs">
             <button
               onClick={() => onToggleRedacted(false)}
-              className={`px-3 py-1 rounded-md font-medium transition-colors ${
+              className={`px-3 py-1 rounded-md font-medium transition-colors cursor-pointer ${
                 !showRedacted ? 'bg-zinc-800 text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
@@ -151,7 +153,7 @@ export const ContractViewer: React.FC<ContractViewerProps> = ({
             </button>
             <button
               onClick={() => onToggleRedacted(true)}
-              className={`px-3 py-1 rounded-md font-medium transition-colors flex items-center gap-1.5 ${
+              className={`px-3 py-1 rounded-md font-medium transition-colors flex items-center gap-1.5 cursor-pointer ${
                 showRedacted
                   ? 'bg-zinc-800 text-emerald-400 shadow-sm'
                   : 'text-zinc-400 hover:text-zinc-200'
@@ -165,6 +167,16 @@ export const ContractViewer: React.FC<ContractViewerProps> = ({
             </button>
           </div>
 
+          {/* Legal Memo Button */}
+          <button
+            onClick={onOpenMemo}
+            title="Generate executive legal memo"
+            className="px-2.5 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-zinc-200 border border-zinc-700/80 text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+          >
+            <FileCheck2 className="w-3.5 h-3.5 text-zinc-300" />
+            <span className="hidden sm:inline">Executive Memo</span>
+          </button>
+
           {/* Upload & Export */}
           <input
             ref={fileInputRef}
@@ -176,7 +188,7 @@ export const ContractViewer: React.FC<ContractViewerProps> = ({
           <button
             onClick={() => fileInputRef.current?.click()}
             title="Import custom document"
-            className="px-2.5 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-zinc-300 border border-zinc-700/80 text-xs flex items-center gap-1.5 transition-colors"
+            className="px-2.5 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-zinc-300 border border-zinc-700/80 text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <Upload className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Import</span>
@@ -184,7 +196,7 @@ export const ContractViewer: React.FC<ContractViewerProps> = ({
           <button
             onClick={handleExportContract}
             title="Export markdown"
-            className="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-zinc-300 border border-zinc-700/80 text-xs transition-colors"
+            className="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-zinc-300 border border-zinc-700/80 text-xs transition-colors cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
           </button>
