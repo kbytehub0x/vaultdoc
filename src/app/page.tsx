@@ -10,7 +10,7 @@ import {
   AuditLogEntry,
 } from '@/types';
 import { GOLDEN_CONTRACTS } from '@/data/goldenContracts';
-import { Sidebar } from '@/components/Sidebar';
+import { TelemetryHUD } from '@/components/TelemetryHUD';
 import { ContractViewer } from '@/components/ContractViewer';
 import { ClauseRiskMatrix } from '@/components/ClauseRiskMatrix';
 import { ChatPanel, ChatMessage } from '@/components/ChatPanel';
@@ -27,6 +27,13 @@ import {
   executeLocalNanoInference,
 } from '@/lib/hybridRouter';
 import { maskPII } from '@/lib/redaction';
+import {
+  Shield,
+  FilePlus,
+  History,
+  FileCheck2,
+  Plane,
+} from 'lucide-react';
 
 export default function Home() {
   // State
@@ -58,7 +65,7 @@ export default function Home() {
   const [telemetry, setTelemetry] = useState<TelemetryEvent>({
     timestamp: new Date().toLocaleTimeString(),
     mode: 'simulated_nano',
-    task: 'Idle',
+    task: 'System Idle',
     bytesEgress: 0,
     latencyMs: 78,
     piiMaskedCount: activeContract.redaction.maskedCount,
@@ -87,7 +94,7 @@ export default function Home() {
       sender: 'assistant',
       text: `Hello. I am reviewing the **${activeContract.title}** with ${activeContract.counterparty}.
 
-I have completed a preliminary review of the covenants on-device. All text extraction and entity masking remain in your local browser sandbox with zero network egress. You can ask questions about terms or test cross-document synthesis below.`,
+I have completed a preliminary analysis on-device. All text extraction and entity masking remain in your local browser sandbox with zero network egress. You can ask questions about terms or test cross-document synthesis below.`,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       mode: 'simulated_nano',
       bytesEgress: 0,
@@ -321,55 +328,97 @@ Cross-contract portfolio analysis requires external cloud synthesis via Firebase
   };
 
   return (
-    <div className="flex h-screen bg-zinc-950 text-zinc-100 font-sans overflow-hidden">
-      {/* Sidebar */}
-      <Sidebar
-        contracts={contracts}
-        activeContractId={activeContract.id}
-        onSelectContract={setActiveContract}
-        onOpenUpload={() => setIsUploadModalOpen(true)}
-        onOpenAudit={() => setIsAuditDrawerOpen(true)}
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+      {/* Top Real-Time Telemetry HUD */}
+      <TelemetryHUD
         mode={mode}
         onModeChange={setMode}
+        telemetry={telemetry}
+        hardwareNanoDetected={hardwareNanoDetected}
+        totalPIIProtected={activeContract.redaction.maskedCount}
         isAirplaneMode={isAirplaneMode}
         onToggleAirplaneMode={setIsAirplaneMode}
-        bytesEgress={telemetry.bytesEgress}
-        totalPIIProtected={activeContract.redaction.maskedCount}
       />
 
-      {/* Main Workspace */}
-      <main className="flex-1 flex overflow-hidden">
-        {/* Center: Document & Risk Assessment Stage */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          <ContractViewer
-            contract={activeContract}
-            onUploadContract={(newDoc) => {
-              setContracts((prev) => [newDoc, ...prev]);
-              setActiveContract(newDoc);
-            }}
-            showRedacted={showRedacted}
-            onToggleRedacted={setShowRedacted}
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            onOpenMemo={() => setIsMemoModalOpen(true)}
-          />
+      {/* Main Container */}
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
+        {/* Top Control Bar */}
+        <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-900/80 p-3.5 rounded-xl border border-slate-800 shadow-sm">
+          <div className="flex items-center gap-2.5">
+            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+              Active Contract:
+            </span>
+            <span className="text-xs font-bold text-white px-3 py-1 rounded-lg bg-slate-800 border border-slate-700 shadow-inner">
+              {activeContract.title}
+            </span>
+            {isAirplaneMode && (
+              <span className="flex items-center gap-1 text-[11px] font-mono px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-500/30">
+                <Plane className="w-3 h-3 text-amber-400" /> Offline Protected
+              </span>
+            )}
+          </div>
 
-          <ClauseRiskMatrix
-            clauses={activeContract.clauses}
-            onDraftRedline={handleDraftRedline}
-            onAcceptRedline={handleAcceptRedline}
-            isGeneratingRedline={isGeneratingRedline}
-          />
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsMemoModalOpen(true)}
+              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium flex items-center gap-1.5 border border-slate-700 transition-colors shadow-sm cursor-pointer"
+            >
+              <FileCheck2 className="w-3.5 h-3.5 text-blue-400" />
+              <span>Executive Memo</span>
+            </button>
+            <button
+              onClick={() => setIsUploadModalOpen(true)}
+              className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer"
+            >
+              <FilePlus className="w-3.5 h-3.5" />
+              <span>Ingest Contract</span>
+            </button>
+            <button
+              onClick={() => setIsAuditDrawerOpen(true)}
+              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium flex items-center gap-1.5 border border-slate-700 transition-colors shadow-sm cursor-pointer"
+            >
+              <History className="w-3.5 h-3.5 text-purple-400" />
+              <span>Audit Ledger ({auditLogs.length})</span>
+            </button>
+          </div>
         </div>
 
-        {/* Right: Legal Assistant Chat Panel */}
-        <div className="w-[420px] border-l border-zinc-800/80 bg-zinc-950/60 p-4 flex flex-col h-full shrink-0">
-          <ChatPanel
-            messages={messages}
-            onSendMessage={handleSendMessage}
-            isProcessing={isProcessing}
-            activeMode={mode}
-          />
+        {/* 2-Column Split: Document & Risk Matrix on Left, Chat Copilot on Right */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Left Column: Document Viewer & Clause Risk Matrix */}
+          <div className="lg:col-span-7 space-y-6">
+            <ContractViewer
+              contract={activeContract}
+              onUploadContract={(newDoc) => {
+                setContracts((prev) => [newDoc, ...prev]);
+                setActiveContract(newDoc);
+              }}
+              showRedacted={showRedacted}
+              onToggleRedacted={setShowRedacted}
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              onOpenMemo={() => setIsMemoModalOpen(true)}
+            />
+
+            <ClauseRiskMatrix
+              clauses={activeContract.clauses}
+              onDraftRedline={handleDraftRedline}
+              onAcceptRedline={handleAcceptRedline}
+              isGeneratingRedline={isGeneratingRedline}
+            />
+          </div>
+
+          {/* Right Column: Legal Assistant Chat Panel */}
+          <div className="lg:col-span-5">
+            <div className="sticky top-20">
+              <ChatPanel
+                messages={messages}
+                onSendMessage={handleSendMessage}
+                isProcessing={isProcessing}
+                activeMode={mode}
+              />
+            </div>
+          </div>
         </div>
       </main>
 
@@ -407,6 +456,24 @@ Cross-contract portfolio analysis requires external cloud synthesis via Firebase
           setActiveContract(newDoc);
         }}
       />
+
+      {/* Footer Branding */}
+      <footer className="border-t border-slate-900 bg-slate-950 py-4 text-center text-xs text-slate-500 mt-auto">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between px-4 gap-2">
+          <div className="flex items-center gap-1.5">
+            <Shield className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="font-medium text-slate-400">VaultDoc</span>
+            <span>• Built for #BuildHybridAI Hackathon 2026</span>
+          </div>
+          <div className="flex items-center gap-3 text-slate-400 font-mono text-[11px]">
+            <span>Chrome Gemini Nano (On-Device)</span>
+            <span>•</span>
+            <span>Firebase AI Logic (Cloud Escalation)</span>
+            <span>•</span>
+            <span>Firestore Audit Log</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
