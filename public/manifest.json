@@ -1,0 +1,10 @@
+{
+  "name": "VaultDoc — Hybrid AI Copilot",
+  "short_name": "VaultDoc",
+  "description": "Privacy-First Legal Document Copilot with Gemini Nano & Firebase AI Logic",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#140f0c",
+  "theme_color": "#140f0c",
+  "orientation": "any"
+}

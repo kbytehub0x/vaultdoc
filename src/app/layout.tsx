@@ -1,10 +1,23 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#140f0c',
+};
 
 export const metadata: Metadata = {
   title: 'VaultDoc — Privacy-First Hybrid AI Document Copilot',
   description:
     'Built for #BuildHybridAI with Firebase AI Logic & Chrome Gemini Nano. Zero-egress local processing with user-authorized cloud escalation.',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'VaultDoc',
+  },
 };
 
 export default function RootLayout({
