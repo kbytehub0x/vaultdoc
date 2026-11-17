@@ -36,21 +36,21 @@ export const TelemetryHUD: React.FC<TelemetryHUDProps> = ({
   const isLocal = mode === 'local_nano' || mode === 'simulated_nano';
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-800 bg-slate-950/90 backdrop-blur-md px-4 py-2.5">
+    <header className="sticky top-0 z-40 border-b border-[#3a2d24] bg-[#18120e]/95 backdrop-blur-md px-4 py-2.5">
       <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
         {/* Brand & Purpose */}
         <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold shadow-lg shadow-emerald-500/5">
+          <div className="h-9 w-9 rounded-lg bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-orange-400 font-bold shadow-lg shadow-orange-950/20">
             <Lock className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-bold text-white tracking-tight text-lg">VaultDoc</span>
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-500/30">
+              <span className="font-bold text-[#fdfbf7] tracking-tight text-lg">VaultDoc</span>
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#341b09] text-orange-200 border border-orange-600/40">
                 Hybrid AI Copilot
               </span>
             </div>
-            <p className="text-xs text-slate-400">Built for Google Firebase #BuildHybridAI</p>
+            <p className="text-xs text-[#aa9688]">Built for Google Firebase #BuildHybridAI</p>
           </div>
         </div>
 
@@ -61,18 +61,18 @@ export const TelemetryHUD: React.FC<TelemetryHUDProps> = ({
             onClick={() => onToggleAirplaneMode(!isAirplaneMode)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md border font-mono transition-all cursor-pointer ${
               isAirplaneMode
-                ? 'bg-amber-950/80 border-amber-500 text-amber-200 shadow-lg shadow-amber-500/20'
-                : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200'
+                ? 'bg-orange-950/80 border-orange-500 text-orange-200 shadow-lg shadow-orange-950/40'
+                : 'bg-[#241a14] border-[#443125] text-[#d6c5b8] hover:text-white'
             }`}
           >
             {isAirplaneMode ? (
               <>
-                <Plane className="w-3.5 h-3.5 text-amber-400 animate-bounce" />
+                <Plane className="w-3.5 h-3.5 text-orange-400 animate-bounce" />
                 <span className="font-bold">Offline / Airplane Mode ON</span>
               </>
             ) : (
               <>
-                <Wifi className="w-3.5 h-3.5 text-emerald-400" />
+                <Wifi className="w-3.5 h-3.5 text-orange-400" />
                 <span>Simulate Offline Mode</span>
               </>
             )}
@@ -82,40 +82,40 @@ export const TelemetryHUD: React.FC<TelemetryHUDProps> = ({
           <div
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md border font-mono transition-colors ${
               telemetry.bytesEgress === 0
-                ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-300'
-                : 'bg-amber-950/60 border-amber-500/40 text-amber-300'
+                ? 'bg-[#241a12] border-amber-600/40 text-amber-300'
+                : 'bg-[#34190c] border-orange-600/50 text-orange-300'
             }`}
           >
             <ShieldCheck className="w-3.5 h-3.5 text-current shrink-0" />
-            <span className="text-slate-400">Data Egress:</span>
+            <span className="text-[#aa9688]">Data Egress:</span>
             <span className="font-bold">
               {telemetry.bytesEgress === 0 ? '0 Bytes (Pure Local)' : `${telemetry.bytesEgress} Bytes (Redacted)`}
             </span>
           </div>
 
           {/* Latency Meter */}
-          <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-slate-900 border border-slate-800 text-slate-300 font-mono">
-            <Activity className="w-3.5 h-3.5 text-blue-400" />
-            <span className="text-slate-400">Latency:</span>
+          <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#241a14] border border-[#443125] text-[#d6c5b8] font-mono">
+            <Activity className="w-3.5 h-3.5 text-orange-400" />
+            <span className="text-[#aa9688]">Latency:</span>
             <span className="font-semibold text-white">{telemetry.latencyMs}ms</span>
           </div>
 
           {/* PII Protected Count */}
-          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-purple-950/40 border border-purple-500/30 text-purple-300 font-mono">
-            <Lock className="w-3.5 h-3.5 text-purple-400" />
-            <span className="text-purple-400">PII Masked:</span>
+          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#2d1b11] border border-orange-700/40 text-orange-200 font-mono">
+            <Lock className="w-3.5 h-3.5 text-orange-400" />
+            <span className="text-orange-400 font-semibold">PII Masked:</span>
             <span className="font-bold">{totalPIIProtected} Tokens</span>
           </div>
 
           {/* Active Engine Selector (Judge Fail-Safe Switch) */}
-          <div className="flex items-center gap-1.5 pl-2 border-l border-slate-800">
+          <div className="flex items-center gap-1.5 pl-2 border-l border-[#3a2d24]">
             <select
               value={mode}
               onChange={(e) => onModeChange(e.target.value as InferenceMode)}
-              className="bg-slate-900 text-slate-200 border border-slate-700 rounded-md px-2.5 py-1.5 text-xs font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer"
+              className="bg-[#241a14] text-[#fdfbf7] border border-[#443125] rounded-md px-2.5 py-1.5 text-xs font-medium focus:outline-none focus:ring-1 focus:ring-orange-500 cursor-pointer"
             >
               <option value="simulated_nano">
-                🟢 Simulated Gemini Nano (Offline Sandbox)
+                🟠 Simulated Gemini Nano (Offline Sandbox)
               </option>
               <option value="local_nano">
                 {hardwareNanoDetected

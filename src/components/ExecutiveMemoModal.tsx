@@ -64,43 +64,43 @@ Prepared via VaultDoc • Hybrid AI Architecture (Firebase AI Logic + Gemini Nan
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
-      <div className="relative w-full max-w-2xl rounded-xl border border-zinc-700 bg-zinc-900 shadow-2xl overflow-hidden text-zinc-200">
-        <div className="px-6 py-4 border-b border-zinc-800 flex items-center justify-between bg-zinc-950">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+      <div className="relative w-full max-w-2xl rounded-xl border border-[#443125] bg-[#1a1410] shadow-2xl overflow-hidden text-[#fdfbf7]">
+        <div className="px-6 py-4 border-b border-[#362920] flex items-center justify-between bg-[#140f0c]">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-md bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-300">
+            <div className="w-7 h-7 rounded-md bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-orange-400">
               <FileText className="w-3.5 h-3.5" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-zinc-100">Executive Legal Memorandum</h3>
-              <p className="text-xs text-zinc-500">Board-ready legal risk & amendment summary</p>
+              <h3 className="text-sm font-semibold text-[#fdfbf7]">Executive Legal Memorandum</h3>
+              <p className="text-xs text-[#aa9688]">Board-ready legal risk & amendment summary</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors"
+            className="p-1 rounded-md text-[#aa9688] hover:text-white hover:bg-[#2a201a] transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="p-6 overflow-y-auto max-h-[460px] bg-zinc-950/80 font-mono text-xs leading-relaxed text-zinc-300 whitespace-pre-wrap select-text border-b border-zinc-800">
+        <div className="p-6 overflow-y-auto max-h-[460px] bg-[#120d0a]/90 font-mono text-xs leading-relaxed text-[#ded5ce] whitespace-pre-wrap select-text border-b border-[#362920]">
           {memoContent}
         </div>
 
-        <div className="px-6 py-3.5 bg-zinc-950 flex items-center justify-between">
-          <span className="text-[11px] text-zinc-500">Generated locally • 0 KB data egress</span>
+        <div className="px-6 py-3.5 bg-[#140f0c] flex items-center justify-between">
+          <span className="text-[11px] text-[#8c786c]">Generated locally • 0 KB data egress</span>
           <div className="flex items-center gap-2">
             <button
               onClick={handleCopy}
-              className="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-750 text-zinc-300 text-xs font-medium border border-zinc-700 flex items-center gap-1.5 transition-colors"
+              className="px-3 py-1.5 rounded-lg bg-[#2a201a] hover:bg-[#382b22] text-[#f2e7df] text-xs font-medium border border-[#443125] flex items-center gap-1.5 transition-colors cursor-pointer"
             >
-              <Copy className="w-3.5 h-3.5" />
+              <Copy className="w-3.5 h-3.5 text-orange-400" />
               <span>Copy Memo</span>
             </button>
             <button
               onClick={handleDownload}
-              className="px-3.5 py-1.5 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer"
+              className="px-3.5 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-orange-950/40 transition-colors cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Download .md</span>

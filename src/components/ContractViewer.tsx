@@ -113,29 +113,29 @@ export const ContractViewer: React.FC<ContractViewerProps> = ({
       }}
       onDragLeave={() => setIsDragging(false)}
       onDrop={handleFileDrop}
-      className={`rounded-xl border bg-slate-900/90 shadow-xl flex flex-col h-full transition-all ${
-        isDragging ? 'border-emerald-500 ring-2 ring-emerald-500/20' : 'border-slate-800'
+      className={`rounded-xl border bg-[#1d1612]/90 shadow-2xl flex flex-col h-full transition-all ${
+        isDragging ? 'border-orange-500 ring-2 ring-orange-500/20' : 'border-[#3b2d24]'
       }`}
     >
       {/* Top Document Header Bar */}
-      <div className="px-5 py-3.5 border-b border-slate-800 bg-slate-950/60 flex flex-wrap items-center justify-between gap-3">
+      <div className="px-5 py-3.5 border-b border-[#3b2d24] bg-[#18120e]/80 flex flex-wrap items-center justify-between gap-3">
         {/* Document Title & Meta */}
         <div>
           <div className="flex items-center gap-2">
-            <FileText className="w-4 h-4 text-blue-400" />
-            <h1 className="font-bold text-white text-sm">{contract.title}</h1>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+            <FileText className="w-4 h-4 text-orange-400" />
+            <h1 className="font-bold text-[#fdfbf7] text-sm">{contract.title}</h1>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#2a201a] text-orange-200 border border-[#443125]">
               {contract.type}
             </span>
           </div>
-          <div className="flex items-center gap-3 text-xs text-slate-400 mt-1">
+          <div className="flex items-center gap-3 text-xs text-[#aa9688] mt-1">
             <span className="flex items-center gap-1">
-              <Building className="w-3.5 h-3.5 text-slate-500" />
+              <Building className="w-3.5 h-3.5 text-[#8c786c]" />
               {contract.counterparty}
             </span>
             <span>•</span>
             <span className="flex items-center gap-1">
-              <Calendar className="w-3.5 h-3.5 text-slate-500" />
+              <Calendar className="w-3.5 h-3.5 text-[#8c786c]" />
               Effective: {contract.effectiveDate}
             </span>
           </div>
@@ -144,11 +144,11 @@ export const ContractViewer: React.FC<ContractViewerProps> = ({
         {/* View Tabs (Text vs Redacted) & Actions */}
         <div className="flex items-center gap-2">
           {/* Segmented Control */}
-          <div className="flex items-center bg-slate-950 p-1 rounded-lg border border-slate-800 text-xs">
+          <div className="flex items-center bg-[#140f0c] p-1 rounded-lg border border-[#3b2d24] text-xs">
             <button
               onClick={() => onToggleRedacted(false)}
               className={`px-3 py-1 rounded-md font-medium transition-colors cursor-pointer ${
-                !showRedacted ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
+                !showRedacted ? 'bg-[#2a201a] text-white shadow-sm' : 'text-[#aa9688] hover:text-[#fdfbf7]'
               }`}
             >
               <span className="flex items-center gap-1.5">
@@ -160,13 +160,13 @@ export const ContractViewer: React.FC<ContractViewerProps> = ({
               onClick={() => onToggleRedacted(true)}
               className={`px-3 py-1 rounded-md font-medium transition-colors flex items-center gap-1.5 cursor-pointer ${
                 showRedacted
-                  ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/40 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-[#341b09] text-orange-200 border border-orange-600/40 shadow-sm'
+                  : 'text-[#aa9688] hover:text-[#fdfbf7]'
               }`}
             >
-              <Lock className="w-3.5 h-3.5 text-emerald-400" />
+              <Lock className="w-3.5 h-3.5 text-orange-400" />
               <span>Masked View</span>
-              <span className="text-[10px] font-mono bg-emerald-500/20 px-1.5 py-0.2 rounded text-emerald-300 font-bold">
+              <span className="text-[10px] font-mono bg-orange-600/20 px-1.5 py-0.2 rounded text-orange-300 font-bold">
                 {contract.redaction.maskedCount}
               </span>
             </button>
@@ -176,9 +176,9 @@ export const ContractViewer: React.FC<ContractViewerProps> = ({
           <button
             onClick={onOpenMemo}
             title="Generate executive legal memo"
-            className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm"
+            className="px-2.5 py-1.5 rounded-lg bg-[#2a201a] hover:bg-[#382b22] text-[#f2e7df] border border-[#443125] text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm"
           >
-            <FileCheck2 className="w-3.5 h-3.5 text-blue-400" />
+            <FileCheck2 className="w-3.5 h-3.5 text-orange-400" />
             <span className="hidden sm:inline">Memo</span>
           </button>
 
@@ -193,7 +193,7 @@ export const ContractViewer: React.FC<ContractViewerProps> = ({
           <button
             onClick={() => fileInputRef.current?.click()}
             title="Import custom document"
-            className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm"
+            className="px-2.5 py-1.5 rounded-lg bg-[#2a201a] hover:bg-[#382b22] text-[#d6c5b8] border border-[#443125] text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm"
           >
             <Upload className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Import</span>
@@ -201,7 +201,7 @@ export const ContractViewer: React.FC<ContractViewerProps> = ({
           <button
             onClick={handleExportContract}
             title="Export markdown"
-            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs transition-colors cursor-pointer shadow-sm"
+            className="p-1.5 rounded-lg bg-[#2a201a] hover:bg-[#382b22] text-[#d6c5b8] border border-[#443125] text-xs transition-colors cursor-pointer shadow-sm"
           >
             <Download className="w-3.5 h-3.5" />
           </button>
@@ -209,46 +209,46 @@ export const ContractViewer: React.FC<ContractViewerProps> = ({
       </div>
 
       {/* Subheader: Filter & Search Bar */}
-      <div className="px-5 py-2.5 bg-slate-900/50 border-b border-slate-850 flex items-center justify-between text-xs text-slate-400">
+      <div className="px-5 py-2.5 bg-[#18120e]/60 border-b border-[#30241c] flex items-center justify-between text-xs text-[#aa9688]">
         <div className="flex items-center gap-2">
-          <Tag className="w-3.5 h-3.5 text-slate-500" />
-          <span className="text-slate-300 font-medium">{contract.clauses.length} Flagged Covenants</span>
+          <Tag className="w-3.5 h-3.5 text-[#8c786c]" />
+          <span className="text-[#d6c5b8] font-medium">{contract.clauses.length} Flagged Covenants</span>
           <span>•</span>
-          <span className="text-purple-300 font-mono">{contract.redaction.tokens.length} PII Tokens Masked</span>
+          <span className="text-orange-300 font-mono">{contract.redaction.tokens.length} PII Tokens Masked</span>
         </div>
 
         <div className="relative">
-          <Search className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2" />
+          <Search className="w-3.5 h-3.5 text-[#8c786c] absolute left-2.5 top-2" />
           <input
             type="text"
             placeholder="Filter document..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-slate-950 border border-slate-800 rounded-md pl-7 pr-2.5 py-1 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500 w-36"
+            className="bg-[#140f0c] border border-[#3b2d24] rounded-md pl-7 pr-2.5 py-1 text-xs text-[#fdfbf7] placeholder-[#8c786c] focus:outline-none focus:ring-1 focus:ring-orange-500 w-36"
           />
         </div>
       </div>
 
       {/* Main Document Reading Canvas */}
-      <div className="p-6 flex-1 overflow-y-auto max-h-[460px] bg-slate-950/80 font-mono text-xs leading-relaxed text-slate-300 whitespace-pre-wrap select-text">
+      <div className="p-6 flex-1 overflow-y-auto max-h-[460px] bg-[#120d0a]/90 font-mono text-xs leading-relaxed text-[#ded5ce] whitespace-pre-wrap select-text">
         {showRedacted ? (
-          <div className="text-emerald-300/90 leading-relaxed font-mono">
+          <div className="text-amber-200/95 leading-relaxed font-mono">
             {contract.redaction.redactedText}
           </div>
         ) : (
-          <div className="text-slate-300 leading-relaxed font-mono">
+          <div className="text-[#ded5ce] leading-relaxed font-mono">
             {contract.rawText}
           </div>
         )}
       </div>
 
       {/* Bottom Status Note */}
-      <div className="px-5 py-2 border-t border-slate-800 bg-slate-950/60 flex items-center justify-between text-[11px] text-slate-400">
+      <div className="px-5 py-2 border-t border-[#30241c] bg-[#16100c]/80 flex items-center justify-between text-[11px] text-[#aa9688]">
         <span className="flex items-center gap-1.5">
-          <Shield className="w-3.5 h-3.5 text-emerald-400" />
+          <Shield className="w-3.5 h-3.5 text-orange-400" />
           <span>Local Document Sandbox • 0 Outbound Egress</span>
         </span>
-        <span className="text-slate-500 font-mono">UTF-8 • {contract.rawText.length} chars</span>
+        <span className="text-[#7d695d] font-mono">UTF-8 • {contract.rawText.length} chars</span>
       </div>
     </div>
   );
