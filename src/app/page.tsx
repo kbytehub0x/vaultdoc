@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import confetti from 'canvas-confetti';
 import {
   InferenceMode,
   ContractDocument,
@@ -291,11 +290,18 @@ Cross-contract portfolio analysis requires external cloud synthesis via Firebase
       };
     });
 
-    confetti({
-      particleCount: 50,
-      spread: 60,
-      origin: { y: 0.6 },
-    });
+    if (typeof window !== 'undefined') {
+      import('canvas-confetti')
+        .then((module) => {
+          const confetti = module.default || module;
+          confetti({
+            particleCount: 50,
+            spread: 60,
+            origin: { y: 0.6 },
+          });
+        })
+        .catch(() => {});
+    }
   };
 
   const handleDraftRedline = async (clause: ContractClause) => {
