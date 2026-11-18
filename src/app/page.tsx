@@ -334,7 +334,7 @@ Cross-contract portfolio analysis requires external cloud synthesis via Firebase
   };
 
   return (
-    <div className="min-h-screen bg-[#140f0c] text-[#fdfbf7] flex flex-col font-sans selection:bg-orange-600/30 selection:text-orange-200">
+    <div className="min-h-screen bg-[#140f0c] text-[#fdfbf7] font-sans selection:bg-orange-600/30 selection:text-orange-200">
       {/* Top Real-Time Telemetry HUD */}
       <TelemetryHUD
         mode={mode}
@@ -347,7 +347,7 @@ Cross-contract portfolio analysis requires external cloud synthesis via Firebase
       />
 
       {/* Main Container */}
-      <main className="flex-1 max-w-[1720px] w-full mx-auto p-4 sm:p-6 lg:px-8 space-y-6">
+      <main className="max-w-[1720px] w-full mx-auto p-4 sm:p-6 lg:px-8 space-y-6 pb-16">
         {/* Top Control Bar */}
         <div className="flex flex-wrap items-center justify-between gap-3 bg-[#1e1713]/90 p-3.5 rounded-xl border border-[#3b2d24] shadow-md">
           <div className="flex items-center gap-3 flex-wrap">
@@ -475,7 +475,7 @@ Cross-contract portfolio analysis requires external cloud synthesis via Firebase
       />
 
       {/* Footer Branding */}
-      <footer className="w-full mt-12 border-t border-[#261d17] bg-[#100c09] py-5 text-center text-xs text-[#8c786c]">
+      <footer className="w-full border-t border-[#261d17] bg-[#100c09] py-6 text-center text-xs text-[#8c786c]">
         <div className="max-w-[1720px] w-full mx-auto flex flex-wrap items-center justify-between px-4 sm:px-6 lg:px-8 gap-2">
           <div className="flex items-center gap-1.5">
             <Shield className="w-3.5 h-3.5 text-orange-400" />

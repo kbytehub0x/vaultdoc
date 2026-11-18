@@ -113,7 +113,7 @@ export const ContractViewer: React.FC<ContractViewerProps> = ({
       }}
       onDragLeave={() => setIsDragging(false)}
       onDrop={handleFileDrop}
-      className={`rounded-xl border bg-[#1d1612]/90 shadow-2xl flex flex-col h-full transition-all ${
+      className={`rounded-xl border bg-[#1d1612]/90 shadow-2xl flex flex-col w-full transition-all ${
         isDragging ? 'border-orange-500 ring-2 ring-orange-500/20' : 'border-[#3b2d24]'
       }`}
     >
