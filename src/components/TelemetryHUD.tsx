@@ -37,7 +37,7 @@ export const TelemetryHUD: React.FC<TelemetryHUDProps> = ({
 
   return (
     <header className="sticky top-0 z-40 border-b border-[#3a2d24] bg-[#18120e]/95 backdrop-blur-md px-4 py-2.5">
-      <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div className="max-w-[1720px] w-full mx-auto flex flex-wrap items-center justify-between gap-3">
         {/* Brand & Purpose */}
         <div className="flex items-center gap-3">
           <div className="h-9 w-9 rounded-lg bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-orange-400 font-bold shadow-lg shadow-orange-950/20">
@@ -50,7 +50,9 @@ export const TelemetryHUD: React.FC<TelemetryHUDProps> = ({
                 Hybrid AI Copilot
               </span>
             </div>
-            <p className="text-xs text-[#aa9688]">Built for Google Firebase #BuildHybridAI</p>
+            <p className="text-xs text-orange-200/90 font-medium">
+              ⚡ Gemini Nano (On-Device) + Firebase AI Logic (Cloud)
+            </p>
           </div>
         </div>
 

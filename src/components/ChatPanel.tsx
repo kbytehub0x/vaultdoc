@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { InferenceMode } from '@/types';
-import { Send, MessageSquare, ShieldCheck, Cloud, Terminal } from 'lucide-react';
+import { Send, MessageSquare, ShieldCheck, Cloud, Terminal, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export interface ChatMessage {
   id: string;
@@ -29,6 +29,14 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
   activeMode,
 }) => {
   const [input, setInput] = useState('');
+  const quickPromptsRef = useRef<HTMLDivElement>(null);
+
+  const scrollQuickPrompts = (direction: 'left' | 'right') => {
+    if (quickPromptsRef.current) {
+      const scrollAmount = direction === 'left' ? -200 : 200;
+      quickPromptsRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
 
   const quickPrompts = [
     {
@@ -61,16 +69,16 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
   };
 
   return (
-    <div className="rounded-xl border border-[#3b2d24] bg-[#1d1612]/90 shadow-2xl flex flex-col h-full min-h-[580px]">
+    <div className="rounded-xl border border-[#3b2d24] bg-[#1d1612]/90 shadow-2xl flex flex-col h-full min-h-[620px]">
       {/* Panel Header */}
-      <div className="px-5 py-4 border-b border-[#3b2d24] bg-[#18120e]/80 flex items-center justify-between">
+      <div className="px-5 py-4 border-b border-[#3b2d24] bg-[#18120e]/80 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <div className="p-1.5 rounded-md bg-orange-500/15 text-orange-400 border border-orange-500/30">
             <Terminal className="w-4 h-4" />
           </div>
           <div>
             <h3 className="font-bold text-[#fdfbf7] text-sm">Contract Counsel Assistant</h3>
-            <p className="text-xs text-[#aa9688]">On-Device Reasoning + Cloud Escalation Gate</p>
+            <p className="text-xs text-orange-300/80 font-medium">Gemini Nano (On-Device) + Cloud Escalation</p>
           </div>
         </div>
         <div className="flex items-center gap-1.5 text-[11px] text-orange-300 font-mono bg-[#341b09] px-2 py-0.5 rounded border border-orange-600/40">
@@ -79,29 +87,52 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
         </div>
       </div>
 
-      {/* Suggested Inquiries */}
-      <div className="px-4 py-2.5 bg-[#140f0c]/60 border-b border-[#30241c] flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-        <span className="text-[10px] uppercase font-semibold text-[#8c786c] shrink-0 mr-1">
-          Quick Audit:
-        </span>
-        {quickPrompts.map((qp, i) => (
-          <button
-            key={i}
-            onClick={() => onSendMessage(qp.prompt)}
-            disabled={isProcessing}
-            className={`shrink-0 px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors border cursor-pointer ${
-              qp.type === 'cloud'
-                ? 'bg-[#3a1d0d] border-orange-600/50 text-orange-200 hover:bg-[#4d2612]'
-                : 'bg-[#2a201a] border-[#443125] text-[#d6c5b8] hover:bg-[#382b22] hover:text-white'
-            }`}
-          >
-            {qp.label}
-          </button>
-        ))}
+      {/* Suggested Inquiries with Scroll Controls */}
+      <div className="px-3 py-2 bg-[#140f0c]/80 border-b border-[#30241c] flex items-center gap-1.5">
+        <button
+          type="button"
+          onClick={() => scrollQuickPrompts('left')}
+          title="Move prompts left"
+          className="p-1 rounded-md bg-[#241a14] hover:bg-[#382b22] text-orange-400 border border-[#443125] transition-colors shrink-0 cursor-pointer shadow-sm"
+        >
+          <ChevronLeft className="w-3.5 h-3.5" />
+        </button>
+
+        <div
+          ref={quickPromptsRef}
+          className="flex-1 flex items-center gap-1.5 overflow-x-auto scroll-smooth py-1 px-1 no-scrollbar"
+        >
+          <span className="text-[10px] uppercase font-semibold text-[#8c786c] shrink-0 mr-1">
+            Quick Audit:
+          </span>
+          {quickPrompts.map((qp, i) => (
+            <button
+              key={i}
+              onClick={() => onSendMessage(qp.prompt)}
+              disabled={isProcessing}
+              className={`shrink-0 px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors border cursor-pointer ${
+                qp.type === 'cloud'
+                  ? 'bg-[#3a1d0d] border-orange-600/60 text-orange-200 hover:bg-[#4d2612] font-semibold'
+                  : 'bg-[#2a201a] border-[#443125] text-[#d6c5b8] hover:bg-[#382b22] hover:text-white'
+              }`}
+            >
+              {qp.label}
+            </button>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => scrollQuickPrompts('right')}
+          title="Move prompts right"
+          className="p-1 rounded-md bg-[#241a14] hover:bg-[#382b22] text-orange-400 border border-[#443125] transition-colors shrink-0 cursor-pointer shadow-sm"
+        >
+          <ChevronRight className="w-3.5 h-3.5" />
+        </button>
       </div>
 
       {/* Messages Feed */}
-      <div className="flex-1 p-4 overflow-y-auto space-y-4 max-h-[460px] bg-[#130e0b]/60 text-xs">
+      <div className="flex-1 p-4 overflow-y-auto space-y-4 min-h-[420px] max-h-[520px] bg-[#130e0b]/60 text-xs">
         {messages.map((m) => {
           const isUser = m.sender === 'user';
           return (
@@ -130,21 +161,21 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
 
                 {/* Provenance Tag */}
                 {!isUser && m.latencyMs !== undefined && (
-                  <div className="mt-2.5 pt-2 border-t border-[#3c2e25] flex items-center justify-between text-[10px] text-[#8c786c] font-mono">
-                    <span className="flex items-center gap-1">
+                  <div className="mt-3 pt-2 border-t border-[#3c2e25] flex items-center justify-between text-[10px] text-[#aa9688] font-mono">
+                    <span className="flex items-center gap-1.5 font-semibold">
                       {m.isEscalated ? (
                         <>
-                          <Cloud className="w-3 h-3 text-orange-400" />
+                          <Cloud className="w-3.5 h-3.5 text-orange-400" />
                           <span className="text-orange-300">Firebase Cloud (Gemini) • Redacted context</span>
                         </>
                       ) : (
                         <>
-                          <ShieldCheck className="w-3 h-3 text-amber-400" />
-                          <span className="text-amber-300">Gemini Nano • 0 B egress</span>
+                          <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+                          <span className="text-amber-300">Gemini Nano (On-Device) • 0 B egress</span>
                         </>
                       )}
                     </span>
-                    <span>{m.latencyMs}ms</span>
+                    <span className="text-orange-200/90">{m.latencyMs}ms</span>
                   </div>
                 )}
               </div>

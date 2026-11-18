@@ -77,14 +77,14 @@ export const ClauseRiskMatrix: React.FC<ClauseRiskMatrixProps> = ({
             <FileEdit className="w-4 h-4" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <h2 className="font-bold text-[#fdfbf7] text-sm">Clause Risk Matrix & Redline Suite</h2>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#341b09] text-orange-200 border border-orange-600/40">
-                On-Device Engine
+                Gemini Nano On-Device
               </span>
             </div>
-            <p className="text-xs text-[#aa9688] mt-0.5">
-              Automated legal risk triage & instant mutual redlines
+            <p className="text-xs text-orange-200/80 mt-0.5 font-medium">
+              Automated on-device legal risk triage & instant mutual redlines
             </p>
           </div>
         </div>
