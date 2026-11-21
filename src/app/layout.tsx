@@ -13,6 +13,10 @@ export const metadata: Metadata = {
   description:
     'Built for #BuildHybridAI with Firebase AI Logic & Chrome Gemini Nano. Zero-egress local processing with user-authorized cloud escalation.',
   manifest: '/manifest.json',
+  icons: {
+    icon: '/favicon.png',
+    apple: '/apple-touch-icon.png',
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
